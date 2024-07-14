@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_management/screens/stock_entry.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,13 +31,20 @@ class MyHomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Inventory Management'),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'This is the main page of app',
             ),
+            ElevatedButton(
+              onPressed: () => {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const StockEntry()))
+              },
+              child: const Text('Change Page'),
+            )
           ],
         ),
       ),
