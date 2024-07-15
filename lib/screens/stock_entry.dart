@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_management/exports/exports.dart';
 
-class StockEntry extends StatelessWidget {
-  StockEntry({super.key});
+class StockEntry extends StatefulWidget {
+  const StockEntry({super.key});
+
+  @override
+  State<StockEntry> createState() => _StockEntryState();
+}
+
+class _StockEntryState extends State<StockEntry> {
   final _itemNameController = TextEditingController();
   final _unitPriceController = TextEditingController();
   final _itemCountController = TextEditingController();
+
+  num totalCost = 0;
+  num unitPrice = 0;
+  int count = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -63,18 +73,32 @@ class StockEntry extends StatelessWidget {
                         height: 25,
                       ),
                       TextButton.icon(
-                        onPressed: () => createSnackbar(
-                          context: context,
-                          message: 'Submit button clicked',
-                          backgroundColor: Colors.green,
-                        ),
+                        onPressed: () {
+                          setState(() {
+                            unitPrice = num.tryParse(_unitPriceController.text) ?? 0;
+                            count = int.tryParse(_itemCountController.text) ?? 0; 
+                            totalCost = unitPrice * count;
+                          });
+                        },
                         label: const Text(
                           'Submit',
                         ),
                         icon: const Icon(
                           Icons.check,
                         ),
-                      )
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            Colors.blue,
+                          ),
+                          foregroundColor: WidgetStateProperty.all(
+                            Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text('Total cost: \u{20B9} $totalCost'),
                     ],
                   ),
                 ),

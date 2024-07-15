@@ -14,3 +14,10 @@ createSnackbar(
   );
   ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
+
+List<String> searchItem = [
+  'Amal Raj',
+  'Rahul Raj',
+  'Rajendran J',
+  'Sheeja Rajendran'
+];
