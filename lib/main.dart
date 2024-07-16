@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory_management/firebase_options.dart';
+import 'package:inventory_management/screens/login_screen.dart';
 import 'package:inventory_management/screens/sell_item.dart';
 import 'package:inventory_management/screens/stock_entry.dart';
 
@@ -72,6 +73,22 @@ class MyHomePage extends StatelessWidget {
               },
               child: const Text(
                 'Add to Stock',
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginScreen(),
+                  ),
+                )
+              },
+              child: const Text(
+                'Login Screen',
               ),
             )
           ],
