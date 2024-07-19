@@ -13,12 +13,15 @@ class DatabaseServices {
   }
 
   create(StockData data) {
-    final itemName = data.getName();
+    final itemName = data.getName().toLowerCase();
     try {
       parent.child(itemName).set(data.toJson());
+      return true;
     } catch (e) {
       log(e.toString());
     }
+
+    return false;
   }
 
   read(String itemName) async {
