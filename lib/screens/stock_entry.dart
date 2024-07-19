@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_management/db/data_models.dart';
+import 'package:inventory_management/db/database_services.dart';
 import 'package:inventory_management/exports/exports.dart';
 
 class StockEntry extends StatefulWidget {
-  const StockEntry({super.key});
+  final DatabaseServices dbServices;
+  const StockEntry(this.dbServices, {super.key});
 
   @override
   State<StockEntry> createState() => _StockEntryState();
@@ -75,10 +78,41 @@ class _StockEntryState extends State<StockEntry> {
                       TextButton.icon(
                         onPressed: () {
                           setState(() {
-                            unitPrice = num.tryParse(_unitPriceController.text) ?? 0;
-                            count = int.tryParse(_itemCountController.text) ?? 0; 
+                            unitPrice =
+                                num.tryParse(_unitPriceController.text) ?? 0;
+                            count =
+                                int.tryParse(_itemCountController.text) ?? 0;
                             totalCost = unitPrice * count;
                           });
+
+                          if (unitPrice == 0 ||
+                              count == 0 ||
+                              _itemNameController.text.isEmpty) {
+                            createSnackbar(
+                              context: context,
+                              message: 'Invalid data entered',
+                              backgroundColor: Colors.red,
+                            );
+                            return;
+                          }
+                          StockData data = StockData(
+                            itemName: _itemNameController.text,
+                            itemCount: count,
+                            itemPrice: unitPrice,
+                          );
+
+                          final status = widget.dbServices.create(data);
+
+                          if (status) {
+                            createSnackbar(
+                              context: context,
+                              message: 'New entry created in database',
+                              backgroundColor: Colors.green,
+                            );
+                            _itemNameController.clear();
+                            _itemCountController.clear();
+                            _unitPriceController.clear();
+                          }
                         },
                         label: const Text(
                           'Submit',
