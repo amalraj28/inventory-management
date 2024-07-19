@@ -12,10 +12,10 @@ class DatabaseServices {
     parent = _real.ref(uuid);
   }
 
-  create(StockData data) {
+  create(StockData data) async {
     final itemName = data.getName().toLowerCase();
     try {
-      parent.child(itemName).set(data.toJson());
+      await parent.child(itemName).set(data.toJson());
       return true;
     } catch (e) {
       log(e.toString());
@@ -26,7 +26,7 @@ class DatabaseServices {
 
   read(String itemName) async {
     try {
-      final data = await parent.child(itemName).once();
+      final data = await parent.child(itemName.toLowerCase()).once();
       return data.snapshot.exists ? data.snapshot.value : null;
     } catch (e) {
       log(e.toString());
@@ -35,28 +35,28 @@ class DatabaseServices {
   }
 
   readProperty(String itemName, String property) async {
-    final data = await read(itemName);
-    if (data != null) return data[property];
-    return null;
+    final data = await read(itemName.toLowerCase());
+    return data[property];
   }
 
   update(String itemName, Map<String, Object> newData) async {
+    final item = itemName.toLowerCase();
     try {
-      final data = await parent.child(itemName).once();
+      final data = await parent.child(item).once();
       if (data.snapshot.exists) {
-        await parent.child(itemName).update(newData);
+        await parent.child(item).update(newData);
         return true;
       }
     } catch (e) {
       log(e.toString());
     }
-
+		
     return false;
   }
 
   delete(String itemName) async {
     try {
-      await parent.child(itemName).remove();
+      await parent.child(itemName.toLowerCase()).remove();
       return true;
     } catch (e) {
       log(e.toString());

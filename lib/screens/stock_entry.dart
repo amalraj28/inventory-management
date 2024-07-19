@@ -76,7 +76,7 @@ class _StockEntryState extends State<StockEntry> {
                         height: 25,
                       ),
                       TextButton.icon(
-                        onPressed: () {
+                        onPressed: () async{
                           setState(() {
                             unitPrice =
                                 num.tryParse(_unitPriceController.text) ?? 0;
@@ -101,7 +101,7 @@ class _StockEntryState extends State<StockEntry> {
                             itemPrice: unitPrice,
                           );
 
-                          final status = widget.dbServices.create(data);
+                          final status = await widget.dbServices.create(data);
 
                           if (status) {
                             createSnackbar(

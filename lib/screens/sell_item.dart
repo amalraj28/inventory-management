@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inventory_management/db/database_services.dart';
 import 'package:inventory_management/exports/exports.dart';
 import 'package:searchfield/searchfield.dart';
 
 class SellItem extends StatelessWidget {
-  SellItem({super.key});
+  late final DatabaseServices dbServices;
+  SellItem(this.dbServices, {super.key});
   final _itemNameController = TextEditingController();
   final _itemCountController = TextEditingController();
 
@@ -31,20 +33,7 @@ class SellItem extends StatelessWidget {
                   border: OutlineInputBorder(),
                   hintText: 'Item Name',
                 ),
-                suggestions: searchItem
-                    .map(
-                      (item) => SearchFieldListItem(
-                        item,
-                        child: Text(
-                          item,
-                        ),
-                      ),
-                    )
-                    .toList(),
-                emptyWidget: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Item Not Found'),
-                ),
+                suggestions: const [],
               ),
               const SizedBox(
                 height: 20,
@@ -64,14 +53,58 @@ class SellItem extends StatelessWidget {
                 height: 20,
               ),
               TextButton.icon(
-                onPressed: () {
-                  final message =
-                      'Name: ${_itemNameController.text}\t\t\t\t\t\tCount: ${_itemCountController.text}';
+                onPressed: () async {
+                  final count = int.tryParse(_itemCountController.text);
+                  if (count == null || _itemNameController.text.isEmpty) {
+                    createSnackbar(
+                      context: context,
+                      message: 'Invalid data',
+                      backgroundColor: Colors.red,
+                    );
+                    return;
+                  }
+                  final availability = await dbServices.readProperty(
+                    _itemNameController.text,
+                    'remQuantity',
+                  );
+                  if (availability == null ||
+                      availability <= 0 ||
+                      count > availability) {
+                    createSnackbar(
+                      context: context,
+                      message: 'Item out of stock or item not in database',
+                      backgroundColor: Colors.red,
+                    );
+                    return;
+                  }
+
+                  final rem = availability - count;
+
+                  final status = await dbServices.update(
+                    _itemNameController.text,
+                    {
+                      'remQuantity': rem,
+                    },
+                  );
+
+                  if (!status) {
+                    context.mounted &&
+                        createSnackbar(
+                          context: context,
+                          message: 'Failed to update database',
+                          backgroundColor: Colors.red,
+                        );
+                    return;
+                  }
+
                   createSnackbar(
                     context: context,
-                    message: message,
+                    message: 'Database updated successfully',
                     backgroundColor: Colors.green,
                   );
+
+                  _itemCountController.clear();
+                  _itemNameController.clear();
                 },
                 label: const Text(
                   'Submit',

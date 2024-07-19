@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_management/db/data_models.dart';
 import 'package:inventory_management/db/database_services.dart';
 import 'package:inventory_management/screens/sell_item.dart';
 import 'package:inventory_management/screens/stock_entry.dart';
@@ -46,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SellItem(),
+                    builder: (context) => SellItem(dbServices),
                   ),
                 )
               },
@@ -69,55 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text(
                 'Add to Stock',
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                StockData data = StockData(
-                  itemName: 'rubber',
-                  itemCount: 15,
-                  itemPrice: 20,
-                );
-
-                dbServices.create(data);
-              },
-              child: const Text('Create'),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                DatabaseServices dbServices = DatabaseServices('amal');
-                final data = await dbServices.read('rubber');
-                print(data);
-              },
-              child: const Text('Read'),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                DatabaseServices dbServices = DatabaseServices('amal');
-                final data =
-                    await dbServices.update('rubber', {'initQuantity': 100});
-                print(data);
-              },
-              child: const Text('Update'),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                DatabaseServices dbServices = DatabaseServices('amal');
-                final data = await dbServices.delete('rubber');
-                print(data);
-              },
-              child: const Text('Remove'),
             ),
           ],
         ),
