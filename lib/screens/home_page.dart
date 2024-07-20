@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_management/db/database_services.dart';
+import 'package:inventory_management/screens/sign_in.dart';
 import 'package:inventory_management/screens/sell_item.dart';
+import 'package:inventory_management/screens/sign_up.dart';
 import 'package:inventory_management/screens/stock_entry.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -68,6 +70,28 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text(
                 'Add to Stock',
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => SignIn(),
+                  ),
+                );
+              },
+              child: const Text('Login Screen'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => const SignUp(),
+                  ),
+                );
+              },
+              child: const Text('Sign up'),
             ),
           ],
         ),

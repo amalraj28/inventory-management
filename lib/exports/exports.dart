@@ -15,4 +15,4 @@ createSnackbar(
   ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
 
-// List<String> searchItem = [];
+const LOGIN_STATUS = 'sign_up_status';
