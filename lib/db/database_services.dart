@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:inventory_management/db/data_models.dart';
 
@@ -36,21 +35,22 @@ class DatabaseServices {
 
   readProperty(String itemName, String property) async {
     final data = await read(itemName.toLowerCase());
-    return data[property];
+    return data != null ? data[property] : null;
   }
 
-  update(String itemName, Map<String, Object> newData) async {
+  Future<bool> update(String itemName, Map<String, Object> newData) async {
     final item = itemName.toLowerCase();
+
     try {
       final data = await parent.child(item).once();
-      if (data.snapshot.exists) {
+      if (data.snapshot.value != null) {
         await parent.child(item).update(newData);
         return true;
       }
     } catch (e) {
       log(e.toString());
     }
-		
+
     return false;
   }
 

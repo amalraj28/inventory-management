@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:inventory_management/firebase_options.dart';
-import 'package:inventory_management/screens/home_page.dart';
+import 'package:inventory_management/screens/splash_screen.dart';
 
 void main() async {
   await dotenv.load(fileName: '.env');
@@ -24,8 +24,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(color: Colors.deepPurple),
       ),
-      home: const MyHomePage('amal'),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
