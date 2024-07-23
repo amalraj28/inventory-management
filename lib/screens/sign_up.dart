@@ -14,7 +14,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   late final AuthServices auth;
-  late final bool _visible;
+  late bool _visible;
 
   @override
   void initState() {
