@@ -14,12 +14,13 @@ class SignIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool obscured = true;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: const Text('Sign In'),
       ),
-      body: Center(
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: Column(
@@ -50,17 +51,31 @@ class SignIn extends StatelessWidget {
               const SizedBox(
                 height: 25,
               ),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  label: Text('Password'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(5),
+              StatefulBuilder(
+                builder: (context, setState) {
+                  return TextFormField(
+                    controller: _passwordController,
+                    obscureText: obscured,
+                    decoration: InputDecoration(
+                      label: const Text('Password'),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            obscured = !obscured;
+                          });
+                        },
+                        icon: Icon(
+                          obscured ? Icons.visibility : Icons.visibility_off,
+                        ),
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(5),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
               const SizedBox(
                 height: 20,
@@ -79,16 +94,18 @@ class SignIn extends StatelessWidget {
                     return;
                   }
 
-                  final cred = await _auth.signInWithEmail(email, pwd);
-                  if (cred == null || cred.toString().isEmpty) {
+                  final response = await _auth.signInWithEmail(email, pwd);
+
+                  if (response.error != null) {
                     createSnackbar(
                       context: context,
-                      message: 'Failed to sign in. Please try again later',
+                      message: response.error!,
+                      backgroundColor: Colors.red,
                     );
                     return;
                   }
 
-                  _handleLogin(context, cred.uid);
+                  _handleLogin(context, response.data!.uid);
                 },
                 child: const Text('Sign In'),
               ),

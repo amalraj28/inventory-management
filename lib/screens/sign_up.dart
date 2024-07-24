@@ -82,12 +82,13 @@ class _SignUpState extends State<SignUp> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final cred = await auth.signUpWithEmail(
+                final response = await auth.signUpWithEmail(
                   _emailController.text,
                   _passwordController.text,
                 );
 
-                if (cred != null) {
+                if (response.error == null) {
+                  final cred = response.data!;
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (ctx) => MyHomePage(cred.uid),
@@ -96,39 +97,42 @@ class _SignUpState extends State<SignUp> {
                 } else {
                   createSnackbar(
                     context: context,
-                    message: 'Authentication failed',
+                    message: response.error!,
+                    backgroundColor: Colors.red,
                   );
                 }
               },
               child: const Text('Sign Up'),
             ),
-						const SizedBox(height: 20,),
-						RichText(
-                text: TextSpan(
-                  text: 'Already registered? Login ',
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'here',
-                      style: const TextStyle(
-                        color: Colors.blue,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          // Navigate to the login page
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SignIn(),
-                            ),
-                          );
-                        },
-                    ),
-                  ],
+            const SizedBox(
+              height: 20,
+            ),
+            RichText(
+              text: TextSpan(
+                text: 'Already registered? Login ',
+                style: const TextStyle(
+                  color: Colors.black,
                 ),
+                children: [
+                  TextSpan(
+                    text: 'here',
+                    style: const TextStyle(
+                      color: Colors.blue,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        // Navigate to the login page
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignIn(),
+                          ),
+                        );
+                      },
+                  ),
+                ],
               ),
+            ),
           ],
         ),
       ),
