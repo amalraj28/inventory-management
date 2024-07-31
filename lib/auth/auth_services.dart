@@ -60,25 +60,20 @@ class AuthServices {
     } on FirebaseAuthException catch (e) {
       late final String message;
       switch (e.code) {
-        case 'email-already-in-use':
-          message = 'Email is already registered';
+        case 'invalid-credential':
+          message = "The credentials doesn't match out records";
           break;
 
         case 'invalid-email':
           message = 'Please enter a valid email';
           break;
 
-        case 'operation-not-allowed':
+        case 'user-disabled':
           message = 'Sorry, this account is not authorised to access this app.';
-          break;
-
-        case 'weak-password':
-          message = 'Please create a strong password';
           break;
 
         default:
           message = 'Unknown error. Please try again later!';
-          break;
       }
 
       return Result(error: message);
