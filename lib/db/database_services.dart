@@ -11,7 +11,7 @@ class DatabaseServices {
   DatabaseServices._constructor(this.uuid) {
     parent = _real.ref('/data').child(uuid);
   }
-
+	
   static Future<DatabaseServices> constructor(String uid) async {
     final dbServices = DatabaseServices._constructor(uid);
     await dbServices._updateMap();
@@ -33,7 +33,7 @@ class DatabaseServices {
     }
   }
 
-  create(StockData data) async {
+  Future<bool> create(StockData data) async {
     final itemName = data.getName().toLowerCase();
     try {
       await parent.child(itemName).set(data.toJson());
@@ -50,7 +50,7 @@ class DatabaseServices {
     return _mapping.keys.toList();
   }
 
-  Map<String, Map<String, Object>> getEntries() {
+  static Map<String, Map<String, Object>> getEntries() {
     return _mapping;
   }
 

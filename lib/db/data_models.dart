@@ -1,19 +1,23 @@
 class StockData {
   final String itemName;
-  final num itemCount;
-  final num itemPrice;
+  final int availableStock;
+  final num salePrice;
+  final num purchasePrice;
+  int soldStock;
 
   StockData({
     required this.itemName,
-    required this.itemCount,
-    required this.itemPrice,
+    required this.availableStock,
+    required this.salePrice,
+    required this.purchasePrice,
+    this.soldStock = 0,
   });
 
   Map<String, Object> toJson() => {
-        'initQuantity': itemCount,
-        'remQuantity': itemCount,
-        'costPrice': itemPrice,
-        'sellingPrice': itemPrice,
+        'availableStock': availableStock, 
+        'soldStock': soldStock,
+        'purchasePrice': purchasePrice,
+        'sellingPrice': salePrice,
       };
 
   String getName() => itemName;
