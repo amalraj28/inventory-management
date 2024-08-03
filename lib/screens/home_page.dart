@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:inventory_management/api/pdf_invoice_api.dart';
+import 'package:inventory_management/db/data_models.dart';
 import 'package:inventory_management/db/database_services.dart';
 import 'package:inventory_management/screens/sell_item.dart';
 import 'package:inventory_management/screens/stock_entry.dart';
@@ -89,6 +91,57 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     child: const Text(
                       'Add to Stock',
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      Invoice invoice = Invoice(
+                        info: InvoiceInfo(
+                          description: 'description',
+                          number: 10,
+                          date: DateTime.now(),
+                          dueDate: DateTime.now(),
+                        ),
+                        supplier: const Supplier(
+                          address: 'supply address',
+                          name: 'supply name',
+                          paymentInfo: 'supply payment',
+                        ),
+                        customer: const Customer(
+                          address: 'customer address',
+                          name: 'customer name',
+                        ),
+                        items: <InvoiceItem>[
+                          InvoiceItem(
+                            date: DateTime.now(),
+                            description: 'pen',
+                            quantity: 5,
+                            vat: 0,
+                            unitPrice: 5,
+                          ),
+                          InvoiceItem(
+                            date: DateTime.now(),
+                            description: 'rubber',
+                            quantity: 5,
+                            vat: 0,
+                            unitPrice: 5,
+                          ),
+                          InvoiceItem(
+                            date: DateTime.now(),
+                            description: 'pencil',
+                            quantity: 5,
+                            vat: 1,
+                            unitPrice: 5,
+                          ),
+                        ],
+                      );
+                      await PdfInvoiceApi.generate(invoice);
+                    },
+                    child: const Text(
+                      'Generate PDF',
                     ),
                   ),
                 ],

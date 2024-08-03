@@ -11,14 +11,14 @@ class DatabaseServices {
   DatabaseServices._constructor(this.uuid) {
     parent = _real.ref('/data').child(uuid);
   }
-	
+
   static Future<DatabaseServices> constructor(String uid) async {
     final dbServices = DatabaseServices._constructor(uid);
-    await dbServices._updateMap();
+    await dbServices.updateMap();
     return dbServices;
   }
 
-  Future<void> _updateMap() async {
+  Future<void> updateMap() async {
     final entries = await parent.once();
     if (entries.snapshot.value == null) {
       _mapping.clear();
@@ -37,7 +37,7 @@ class DatabaseServices {
     final itemName = data.getName().toLowerCase();
     try {
       await parent.child(itemName).set(data.toJson());
-      await _updateMap();
+      await updateMap();
       return true;
     } catch (e) {
       log(e.toString());
@@ -68,12 +68,9 @@ class DatabaseServices {
     final item = itemName.toLowerCase();
 
     try {
-      final data = await parent.child(item).once();
-      if (data.snapshot.value != null) {
-        await parent.child(item).update(newData);
-        await _updateMap();
-        return true;
-      }
+      await parent.child(item).update(newData);
+      await updateMap();
+      return true;
     } catch (e) {
       log(e.toString());
     }
@@ -84,7 +81,7 @@ class DatabaseServices {
   delete(String itemName) async {
     try {
       await parent.child(itemName.toLowerCase()).remove();
-      await _updateMap();
+      await updateMap();
       return true;
     } catch (e) {
       log(e.toString());
