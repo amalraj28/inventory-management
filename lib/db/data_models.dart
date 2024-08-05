@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class StockData {
   final String itemName;
   final int availableStock;
@@ -17,8 +19,19 @@ class StockData {
         'availableStock': availableStock,
         'soldStock': soldStock,
         'purchasePrice': purchasePrice,
-        'sellingPrice': salePrice,
+        'salePrice': salePrice,
       };
+
+  factory StockData.fromJson(String json) {
+    final data = jsonDecode(json) as Map<String, dynamic>;
+
+    return StockData(
+      itemName: data['itemName'] ?? '',
+      availableStock: data['availableStock'] ?? 0,
+      salePrice: data['salePrice'] ?? 0,
+      purchasePrice: data['purchasePrice'] ?? 0,
+    );
+  }
 
   String getName() => itemName;
 }
@@ -56,13 +69,13 @@ class InvoiceItem {
   final DateTime date;
   final int quantity;
   final num vat;
-  final double unitPrice;
+  final num unitPrice;
 
   const InvoiceItem({
     required this.description,
     required this.date,
     required this.quantity,
-		required this.vat,
+    required this.vat,
     required this.unitPrice,
   });
 }
