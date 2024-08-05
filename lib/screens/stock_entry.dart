@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inventory_management/api/entries_list.dart';
 import 'package:inventory_management/db/data_models.dart';
 import 'package:inventory_management/db/database_services.dart';
+import 'package:inventory_management/screens/add_stock_cart.dart';
 import 'package:searchfield/searchfield.dart';
 
 class StockEntry extends StatefulWidget {
@@ -20,6 +22,7 @@ class _StockEntryState extends State<StockEntry> {
   bool purchasePriceEnabled = true;
   String statusMsg = '';
   bool success = false;
+  late final InventoryProvider provider = InventoryProvider();
 
   num totalCost = 0;
   num unitPrice = 0;
@@ -30,6 +33,23 @@ class _StockEntryState extends State<StockEntry> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add to Stock'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => CartScreen(
+                    items: provider.items,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
@@ -192,7 +212,9 @@ class _StockEntryState extends State<StockEntry> {
                               (int.tryParse(
                                     widget.dbServices
                                         .readProperty(
-                                            itemName, 'availableStock')
+                                          itemName,
+                                          'availableStock',
+                                        )
                                         .toString(),
                                   ) ??
                                   0),
@@ -210,6 +232,8 @@ class _StockEntryState extends State<StockEntry> {
                       _itemNameController.clear();
                       _purchasePriceController.clear();
                       _salePriceController.clear();
+
+                      provider.addInvoice(data);
 
                       setState(() {
                         purchasePriceEnabled = true;

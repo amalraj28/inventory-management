@@ -39,12 +39,12 @@ class _SplashScreenState extends State<SplashScreen> {
     final sharedPrefs = await SharedPreferences.getInstance();
     final status = sharedPrefs.getString(LOGIN_STATUS);
     status != null
-        ? Navigator.of(context).pushReplacement(
+        ? await Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (ctx) => MyHomePage(status),
             ),
           )
-        : Navigator.of(context).pushReplacement(
+        : await Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (ctx) => SignIn(),
             ),
