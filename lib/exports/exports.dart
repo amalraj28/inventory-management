@@ -14,5 +14,3 @@ createSnackbar(
   );
   ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
-
-const LOGIN_STATUS = 'sign_up_status';

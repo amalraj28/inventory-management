@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory_management/auth/auth_services.dart';
+import 'package:inventory_management/exports/constants.dart';
 import 'package:inventory_management/exports/exports.dart';
 import 'package:inventory_management/screens/home_page.dart';
 import 'package:inventory_management/screens/sign_up.dart';

@@ -15,12 +15,20 @@ class StockData {
     this.soldStock = 0,
   });
 
-  Map<String, Object> toJson() => {
-        'availableStock': availableStock,
-        'soldStock': soldStock,
-        'purchasePrice': purchasePrice,
-        'salePrice': salePrice,
-      };
+  Map<String, Object> toJson({bool includeName = true}) {
+    Map<String, Object> obj = {
+      'availableStock': availableStock,
+      'soldStock': soldStock,
+      'purchasePrice': purchasePrice,
+      'salePrice': salePrice,
+    };
+
+    if (includeName) {
+      obj['itemName'] = itemName;
+    }
+
+    return obj;
+  }
 
   factory StockData.fromJson(String json) {
     final data = jsonDecode(json) as Map<String, dynamic>;

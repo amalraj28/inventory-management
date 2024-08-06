@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:inventory_management/api/entries_list.dart';
 import 'package:inventory_management/db/data_models.dart';
 import 'package:inventory_management/db/database_services.dart';
+import 'package:inventory_management/exports/constants.dart';
 import 'package:inventory_management/screens/add_stock_cart.dart';
+import 'package:inventory_management/utils.dart';
 import 'package:searchfield/searchfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StockEntry extends StatefulWidget {
   final DatabaseServices dbServices;
@@ -22,8 +25,7 @@ class _StockEntryState extends State<StockEntry> {
   bool purchasePriceEnabled = true;
   String statusMsg = '';
   bool success = false;
-  late final InventoryProvider provider = InventoryProvider();
-
+  List<StockData> itemList = [];
   num totalCost = 0;
   num unitPrice = 0;
   int count = 0;
@@ -36,10 +38,11 @@ class _StockEntryState extends State<StockEntry> {
         actions: [
           IconButton(
             onPressed: () async {
+              itemList = await _loadInvoicesFromStorage();
               await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => CartScreen(
-                    items: provider.items,
+                    items: itemList,
                   ),
                 ),
               );
@@ -233,7 +236,9 @@ class _StockEntryState extends State<StockEntry> {
                       _purchasePriceController.clear();
                       _salePriceController.clear();
 
-                      provider.addInvoice(data);
+                      StockData newData = StockData(itemName: itemName, availableStock: availableStock, salePrice: salePrice, purchasePrice: purchasePrice);
+
+                      await _saveInvoiceToStorage(newData);
 
                       setState(() {
                         purchasePriceEnabled = true;
@@ -259,5 +264,113 @@ class _StockEntryState extends State<StockEntry> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveInvoiceToStorage(StockData data) async {
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    if (!sharedPrefs.containsKey(ITEM_LIST)) {
+      final newPrefObject = {
+        Utils.formatDate(DateTime.now()): [data],
+      };
+      try {
+        sharedPrefs.setString(ITEM_LIST, jsonEncode(newPrefObject));
+      } catch (e) {
+        return;
+      }
+    } else {
+      final prefObjectAsString = sharedPrefs.getString(ITEM_LIST);
+      if (prefObjectAsString == null) {
+        return;
+      }
+
+      late final Map<String, List<StockData>> prefObject;
+
+      try {
+        Map<String, dynamic> data = jsonDecode(prefObjectAsString);
+        prefObject = data.map((key, value) {
+          return MapEntry(
+            key,
+            (value as List<dynamic>).map((item) {
+              return StockData.fromJson(jsonEncode(item));
+            }).toList(),
+          );
+        });
+      } catch (e) {
+        return;
+      }
+
+      final date = Utils.formatDate(DateTime.now());
+
+      if (prefObject.containsKey(date)) {
+        prefObject[date]!.add(data);
+      } else {
+        prefObject[date] = [data];
+      }
+
+      await sharedPrefs.setString(ITEM_LIST, jsonEncode(prefObject));
+    }
+  }
+
+  Future<List<StockData>> _loadInvoicesFromStorage() async {
+    await _clearStorage();
+
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    if (!sharedPrefs.containsKey(ITEM_LIST)) {
+      return [];
+    }
+
+    final jsonData = sharedPrefs.getString(ITEM_LIST);
+    if (jsonData == null) return [];
+
+    late final Map<String, dynamic> data;
+
+    try {
+      data = jsonDecode(jsonData);
+    } catch (e) {
+      return [];
+    }
+
+    // Convert JSON data to Map<String, List<StockData>>
+    final Map<String, List<StockData>> parsedData = {};
+    data.forEach((key, value) {
+      final List<dynamic> itemsList = value as List<dynamic>;
+      parsedData[key] = itemsList.map((item) {
+        return StockData.fromJson(jsonEncode(item));
+      }).toList(); // Passing JSON string to your factory method
+    });
+
+    try {
+      final today = Utils.formatDate(DateTime.now());
+      if (parsedData.containsKey(today) && parsedData[today] != null) {
+        return parsedData[today]!;
+      }
+    } catch (e) {
+      return [];
+    }
+
+    return [];
+  }
+
+  Future<void> _clearStorage() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    final pref = sharedPrefs.getString(ITEM_LIST);
+
+    if (pref == null || pref.isEmpty) return;
+    late final Map<String, List<StockData>> data;
+    try {
+      data = jsonDecode(pref);
+    } catch (e) {
+      return;
+    }
+
+    final keys = data.keys.toList();
+
+    for (final key in keys) {
+      if (data.containsKey(key)) {
+        data.remove(key);
+      }
+    }
+
+    await sharedPrefs.setString(ITEM_LIST, jsonEncode(data));
   }
 }

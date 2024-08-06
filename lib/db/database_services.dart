@@ -36,7 +36,7 @@ class DatabaseServices {
   Future<bool> create(StockData data) async {
     final itemName = data.getName().toLowerCase();
     try {
-      await parent.child(itemName).set(data.toJson());
+      await parent.child(itemName).set(data.toJson(includeName: false));
       await updateMap();
       return true;
     } catch (e) {

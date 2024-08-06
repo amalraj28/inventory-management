@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inventory_management/exports/exports.dart';
+import 'package:inventory_management/exports/constants.dart';
 import 'package:inventory_management/screens/home_page.dart';
 import 'package:inventory_management/screens/sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
