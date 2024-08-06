@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_management/api/pdf_invoice_api.dart';
 import 'package:inventory_management/db/data_models.dart';
-import 'package:inventory_management/exports/constants.dart';
+import 'package:inventory_management/exports/exports.dart';
 
 class CartScreen extends StatefulWidget {
   final List<StockData> items;
@@ -183,9 +183,9 @@ class _CartScreenState extends State<CartScreen> {
                             paymentInfo:
                                 paymentInfoController.text.toUpperCase(),
                           ),
-                          customer: const Customer(
+                          customer: Customer(
                             address: OUR_ADDRESS,
-                            name: OUR_WEBSITE,
+                            name: OUR_NAME,
                           ),
                           items: items,
                         );

@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:inventory_management/api/pdf_api.dart';
 import 'package:inventory_management/db/data_models.dart';
-import 'package:inventory_management/exports/constants.dart';
+import 'package:inventory_management/exports/exports.dart';
 import 'package:inventory_management/utils.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
