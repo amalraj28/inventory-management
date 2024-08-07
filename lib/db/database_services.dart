@@ -59,7 +59,7 @@ class DatabaseServices {
     return _mapping[item];
   }
 
-  readProperty(String itemName, String property) {
+  Object? readProperty(String itemName, String property) {
     final item = itemName.toLowerCase();
     return _mapping[item]?[property];
   }

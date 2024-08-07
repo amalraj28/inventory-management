@@ -268,17 +268,17 @@ class _StockEntryState extends State<StockEntry> {
 
   Future<void> _saveInvoiceToStorage(StockData data) async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    if (!sharedPrefs.containsKey(ITEM_LIST)) {
+    if (!sharedPrefs.containsKey(ADD_STOCK_LIST)) {
       final newPrefObject = {
         Utils.formatDate(DateTime.now()): [data],
       };
       try {
-        sharedPrefs.setString(ITEM_LIST, jsonEncode(newPrefObject));
+        sharedPrefs.setString(ADD_STOCK_LIST, jsonEncode(newPrefObject));
       } catch (e) {
         return;
       }
     } else {
-      final prefObjectAsString = sharedPrefs.getString(ITEM_LIST);
+      final prefObjectAsString = sharedPrefs.getString(ADD_STOCK_LIST);
       if (prefObjectAsString == null) {
         return;
       }
@@ -307,7 +307,7 @@ class _StockEntryState extends State<StockEntry> {
         prefObject[date] = [data];
       }
 
-      await sharedPrefs.setString(ITEM_LIST, jsonEncode(prefObject));
+      await sharedPrefs.setString(ADD_STOCK_LIST, jsonEncode(prefObject));
     }
   }
 
@@ -315,11 +315,11 @@ class _StockEntryState extends State<StockEntry> {
     await _clearStorage();
 
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    if (!sharedPrefs.containsKey(ITEM_LIST)) {
+    if (!sharedPrefs.containsKey(ADD_STOCK_LIST)) {
       return [];
     }
 
-    final jsonData = sharedPrefs.getString(ITEM_LIST);
+    final jsonData = sharedPrefs.getString(ADD_STOCK_LIST);
     if (jsonData == null) return [];
 
     late final Map<String, dynamic> data;
@@ -353,7 +353,7 @@ class _StockEntryState extends State<StockEntry> {
 
   Future<void> _clearStorage() async {
     final sharedPrefs = await SharedPreferences.getInstance();
-    final pref = sharedPrefs.getString(ITEM_LIST);
+    final pref = sharedPrefs.getString(ADD_STOCK_LIST);
 
     if (pref == null || pref.isEmpty) return;
     late final Map<String, List<StockData>> data;
@@ -371,6 +371,6 @@ class _StockEntryState extends State<StockEntry> {
       }
     }
 
-    await sharedPrefs.setString(ITEM_LIST, jsonEncode(data));
+    await sharedPrefs.setString(ADD_STOCK_LIST, jsonEncode(data));
   }
 }
