@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_management/db/database_services.dart';
-import 'package:inventory_management/exports/constants.dart';
 import 'package:inventory_management/screens/sell_item.dart';
 import 'package:inventory_management/screens/stock_entry.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyHomePage extends StatefulWidget {
   final String uuid;
@@ -93,34 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     child: const Text(
                       'Add to Stock',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final sharedPrefs = await SharedPreferences.getInstance();
-                      if (sharedPrefs.containsKey(SALE_LIST)) {
-                        print(sharedPrefs.getString(SALE_LIST));
-                      } else {
-                        print('No Data!!!');
-                      }
-                    },
-                    child: const Text(
-                      'Print sharedPrefs',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final sharedPrefs = await SharedPreferences.getInstance();
-                      await sharedPrefs.remove(SALE_LIST);
-                    },
-                    child: const Text(
-                      'Clear sharedPrefs',
                     ),
                   ),
                 ],
