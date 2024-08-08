@@ -7,7 +7,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class PdfInvoiceApi {
-  static Future<void> generate(Invoice invoice) async {
+  static Future<void> generate(Invoice invoice,
+      {bool dueDateNeeded = true}) async {
     final theme = pw.ThemeData.withFont(
       base: pw.Font.ttf(
         await rootBundle.load("fonts/OpenSans-Regular.ttf"),
@@ -28,10 +29,13 @@ class PdfInvoiceApi {
     pdf.addPage(
       pw.MultiPage(
           build: (context) => [
-                buildHeader(invoice),
+                buildHeader(
+                  invoice,
+                  dueDateNeeded: dueDateNeeded,
+                ),
                 pw.SizedBox(height: 3 * PdfPageFormat.cm),
                 buildTitle(),
-                buildInvoice(invoice),
+                buildInvoice(invoice, dueDateNeeded: dueDateNeeded),
                 pw.Divider(),
                 buildTotal(invoice),
               ],
@@ -62,7 +66,7 @@ class PdfInvoiceApi {
         ],
       );
 
-  static pw.Widget buildInvoice(Invoice invoice) {
+  static pw.Widget buildInvoice(Invoice invoice, {bool dueDateNeeded = true}) {
     final headers = [
       'Description',
       'Date',
@@ -75,7 +79,7 @@ class PdfInvoiceApi {
     final data = invoice.items.map((item) {
       final total = item.unitPrice * item.quantity * (1 + item.vat);
 
-      return [
+      final finalList = [
         item.description,
         Utils.formatDate(item.date),
         '${item.quantity}',
@@ -83,6 +87,13 @@ class PdfInvoiceApi {
         '${item.vat} %',
         '\$ ${total.toStringAsFixed(2)}',
       ];
+
+      if (item.vat == 0) {
+        finalList.removeAt(4);
+        headers.remove('VAT');
+      }
+
+      return finalList;
     }).toList();
 
     return pw.TableHelper.fromTextArray(
@@ -126,19 +137,34 @@ class PdfInvoiceApi {
                   width: double.infinity,
                   height: 10,
                 ),
+                vatPercent != 0
+                    ? buildText(
+                        title: 'Net Total',
+                        value: Utils.formatPrice(netTotal),
+                        unite: true,
+                      )
+                    : pw.SizedBox(
+                        height: 0,
+                        width: 0,
+                      ),
+                vatPercent != 0
+                    ? buildText(
+                        title: 'Vat ${vatPercent * 100}%',
+                        value: Utils.formatPrice(vat),
+                        unite: true,
+                      )
+                    : pw.SizedBox(
+                        height: 0,
+                        width: 0,
+                      ),
+                vatPercent != 0
+                    ? pw.Divider()
+                    : pw.SizedBox(
+                        height: 0,
+                        width: 0,
+                      ),
                 buildText(
-                  title: 'Net Total',
-                  value: Utils.formatPrice(netTotal),
-                  unite: true,
-                ),
-                buildText(
-                  title: 'Vat ${vatPercent * 100}%',
-                  value: Utils.formatPrice(vat),
-                  unite: true,
-                ),
-                pw.Divider(),
-                buildText(
-                  title: 'Total Amount Due',
+                  title: 'Total Amount',
                   titleStyle: pw.TextStyle(
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
@@ -206,7 +232,8 @@ class PdfInvoiceApi {
     );
   }
 
-  static pw.Widget buildHeader(Invoice invoice) => pw.Column(
+  static pw.Widget buildHeader(Invoice invoice, {bool dueDateNeeded = true}) =>
+      pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.SizedBox(height: 1 * PdfPageFormat.cm),
@@ -222,7 +249,10 @@ class PdfInvoiceApi {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               buildCustomerAddress(invoice.customer),
-              buildInvoiceInfo(invoice.info),
+              buildInvoiceInfo(
+                invoice.info,
+                dueDateNeeded: dueDateNeeded,
+              ),
             ],
           ),
         ],
@@ -252,13 +282,14 @@ class PdfInvoiceApi {
         ],
       );
 
-  static pw.Widget buildInvoiceInfo(InvoiceInfo info) {
+  static pw.Widget buildInvoiceInfo(InvoiceInfo info,
+      {bool dueDateNeeded = true}) {
     final paymentTerms = '${info.dueDate.difference(info.date).inDays} days';
     final titles = <String>[
       'Invoice Number:',
       'Invoice Date:',
       'Payment Terms:',
-      'Due Date:'
+      'Due Date:',
     ];
     final data = <String>[
       '${info.number}',
@@ -266,6 +297,11 @@ class PdfInvoiceApi {
       paymentTerms,
       Utils.formatDate(info.dueDate),
     ];
+
+    if (!dueDateNeeded) {
+      titles.removeRange(2, 4);
+      data.removeRange(2, 4);
+    }
 
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,

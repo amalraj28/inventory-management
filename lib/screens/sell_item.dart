@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:inventory_management/db/database_services.dart';
 import 'package:inventory_management/exports/constants.dart';
 import 'package:inventory_management/exports/exports.dart';
+import 'package:inventory_management/screens/sale_list_screen.dart';
 import 'package:inventory_management/utils.dart';
 
 import 'package:searchfield/searchfield.dart';
@@ -22,6 +23,7 @@ class _SellItemState extends State<SellItem> {
   final _itemNameController = TextEditingController();
   final _itemCountController = TextEditingController();
   late final GlobalKey<FormState> formKey;
+  List<Map<String, Object>> itemList = [];
 
   @override
   void initState() {
@@ -38,6 +40,24 @@ class _SellItemState extends State<SellItem> {
           'Sell item',
         ),
         backgroundColor: Colors.deepPurple,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              itemList = await _loadFromSharedPrefs();
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => SaleListScreen(
+                    items: itemList,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
@@ -176,10 +196,15 @@ class _SellItemState extends State<SellItem> {
                         );
                       }
 
-                      await _addToSharedPref({
+                      bool status = await _addToSharedPref({
                         'itemName': itemName,
                         'soldStock': countEntered,
                       });
+
+                      if (status) {
+                        _itemCountController.clear();
+                        _itemNameController.clear();
+                      }
                     }
                   },
                   label: const Text(
@@ -309,6 +334,7 @@ class _SellItemState extends State<SellItem> {
 
     final Map<String, dynamic> data = jsonDecode(dataAsString);
     final keys = data.keys.toList();
+
     for (final key in keys) {
       if (key != Utils.formatDate(DateTime.now())) {
         data.remove(key);
@@ -318,15 +344,23 @@ class _SellItemState extends State<SellItem> {
     if (data.isEmpty) return [];
 
     final date = Utils.formatDate(DateTime.now());
-    late final List<Map<String, Object>> ans;
 
     try {
-      ans = data[date];
+      final List<dynamic> dynamicList = data[date] as List<dynamic>;
+
+      // Casting List<dynamic> to List<Map<String, Object>>
+      final List<Map<String, Object>> ans = dynamicList.map((item) {
+        // Ensure that each item is a Map<String, dynamic>
+        final Map<String, dynamic> jsonMap = item as Map<String, dynamic>;
+
+        // Convert the Map<String, dynamic> to Map<String, Object>
+        return jsonMap.map((key, value) => MapEntry(key, value as Object));
+      }).toList();
+
+      return ans;
     } catch (e) {
-      print('Error in loading');
+      print('Error in loading: ${e.toString()}');
       return [];
     }
-
-    return ans;
   }
 }
