@@ -113,56 +113,6 @@ class _SellItemState extends State<SellItem> {
                 ),
                 TextButton.icon(
                   onPressed: () async {
-                    // 	final count = int.tryParse(_itemCountController.text);
-                    // 	if (count == null ||
-                    // 			_itemNameController.text.isEmpty ||
-                    // 			count <= 0) {
-                    // 		return;
-                    // 	}
-                    // 	final obj = widget.dbServices.readProperty(
-                    // 		_itemNameController.text,
-                    // 		'remQuantity',
-                    // 	);
-
-                    // 	final availability = int.tryParse(obj.toString()) ?? -1;
-                    // 	if (availability <= 0 || count > availability) {
-                    // 		createSnackbar(
-                    // 			context: context,
-                    // 			message: 'Item out of stock or item not in database',
-                    // 			backgroundColor: Colors.red,
-                    // 		);
-                    // 		return;
-                    // 	}
-
-                    // 	final rem = availability - count;
-                    // 	final status = await widget.dbServices.update(
-                    // 		_itemNameController.text,
-                    // 		{
-                    // 			'remQuantity': rem,
-                    // 		},
-                    // 	);
-
-                    // 	if (!status) {
-                    // 		context.mounted &&
-                    // 				createSnackbar(
-                    // 					context: context,
-                    // 					message: 'Failed to update database',
-                    // 					backgroundColor: Colors.red,
-                    // 				);
-                    // 		return;
-                    // 	}
-
-                    // 	context.mounted &&
-                    // 			createSnackbar(
-                    // 				context: context,
-                    // 				message: 'Database updated successfully',
-                    // 				backgroundColor: Colors.green,
-                    // 			);
-
-                    // 	_itemCountController.clear();
-                    // 	_itemNameController.clear();
-
-                    // Step 1: check if item is in database
                     if (formKey.currentState!.validate()) {
                       final itemName =
                           _itemNameController.text.trim().toLowerCase();
@@ -264,51 +214,31 @@ class _SellItemState extends State<SellItem> {
         await sharedPrefs.remove(SALE_LIST);
       } else {
         try {
-          // final Map<String, dynamic> savedData = jsonDecode(prefData);
-
-          // final Map<String, List<dynamic>> parsedData = {};
-          // savedData.forEach((key, value) {
-          //   final List<dynamic> itemsList = value as List<dynamic>;
-          //   parsedData[key] = itemsList
-          //       .map((item) => {
-          //             'itemName': item['itemName'],
-          //             'soldStock': item['soldStock'],
-          //           })
-          //       .toList();
-          // });
-          // parsedData[date]!.add(data);
-
-          // return await sharedPrefs.setString(
-          //   SALE_LIST,
-          //   jsonEncode({date: savedData}),
-          // );
           final Map<String, dynamic> savedData = jsonDecode(prefData);
-
-// Step 2: Create a new Map<String, List<dynamic>>
           final Map<String, List<dynamic>> parsedData = {};
 
-// Step 3: Iterate over the savedData and ensure each value is treated as a list
-          savedData.forEach((key, value) {
-            // Ensure value is treated as a List<dynamic>
-            final List<dynamic> itemsList = value as List<dynamic>;
-            parsedData[key] = itemsList.map((item) {
-              return {
-                'itemName': item['itemName'],
-                'soldStock': item['soldStock'],
-              };
-            }).toList();
-          });
+          savedData.forEach(
+            (key, value) {
+              final List<dynamic> itemsList = value as List<dynamic>;
+              parsedData[key] = itemsList.map(
+                (item) {
+                  return {
+                    'itemName': item['itemName'],
+                    'soldStock': item['soldStock'],
+                  };
+                },
+              ).toList();
+            },
+          );
 
-// Step 4: Add new data to the list associated with the current date
           parsedData[date]!.add(data);
 
-// Step 5: Convert the parsedData back to JSON and save it
           return await sharedPrefs.setString(
             SALE_LIST,
             jsonEncode(parsedData),
           );
         } catch (e) {
-          print(e.toString());
+          return false;
         }
       }
     }

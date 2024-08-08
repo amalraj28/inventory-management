@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inventory_management/api/pdf_invoice_api.dart';
 import 'package:inventory_management/db/data_models.dart';
 import 'package:inventory_management/db/database_services.dart';
-import 'package:inventory_management/exports/exports.dart';
+import 'package:inventory_management/exports/constants.dart';
 
 class SaleListScreen extends StatefulWidget {
   final List<Map<String, Object>> items;

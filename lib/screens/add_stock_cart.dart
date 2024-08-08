@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inventory_management/api/pdf_invoice_api.dart';
 import 'package:inventory_management/db/data_models.dart';
-import 'package:inventory_management/exports/exports.dart';
+import 'package:inventory_management/exports/constants.dart';
 
 class CartScreen extends StatefulWidget {
   final List<StockData> items;
@@ -175,7 +175,8 @@ class _CartScreenState extends State<CartScreen> {
                             description: '10',
                             number: 10,
                             date: DateTime.now(),
-                            dueDate: DateTime.now(),
+                            dueDate:
+                                DateTime.now().add(const Duration(days: 7)),
                           ),
                           supplier: Supplier(
                             name: companyController.text,
@@ -183,7 +184,7 @@ class _CartScreenState extends State<CartScreen> {
                             paymentInfo:
                                 paymentInfoController.text.toUpperCase(),
                           ),
-                          customer: Customer(
+                          customer: const Customer(
                             address: OUR_ADDRESS,
                             name: OUR_NAME,
                           ),
